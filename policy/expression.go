@@ -50,27 +50,55 @@ type PathExpression struct {
 }
 
 // Helper functions to create specific expression types
-func NewCondition(memberType, key, operator, scopeOperator, value string) Expression {
-	return Expression{
+func UpdateCondition(group *Group, memberType, key, operator, scopeOperator, value string) {
+	for ix := range group.Expression {
+		if group.Expression[ix].ResourceType == "Condition" {
+			// Update existing condition
+			group.Expression[ix].MemberType = memberType
+			group.Expression[ix].Key = key
+			group.Expression[ix].Operator = operator
+			group.Expression[ix].ScopeOperator = scopeOperator
+			group.Expression[ix].Value = value
+			return
+		}
+	}
+	group.Expression = append(group.Expression, Expression{
 		ResourceType:  "Condition",
 		MemberType:    memberType,
 		Key:           key,
 		Operator:      operator,
 		ScopeOperator: scopeOperator,
 		Value:         value,
-	}
+	})
+
 }
 
-func NewConjunctionOperator(operator string) Expression {
-	return Expression{
+func UpdateConjunctionOperator(group *Group, operator string) {
+	for ix := range group.Expression {
+		if group.Expression[ix].ResourceType == "ConjunctionOperator" {
+			// Update existing conjunction operator
+			group.Expression[ix].ConjunctionOperator = operator
+			return
+		}
+	}
+	group.Expression = append(group.Expression, Expression{
 		ResourceType:        "ConjunctionOperator",
 		ConjunctionOperator: operator,
-	}
+	})
+
 }
 
-func NewPathExpression(paths []string) Expression {
-	return Expression{
+func UpdatePathExpression(group *Group, paths []string) {
+
+	for ix := range group.Expression {
+		if group.Expression[ix].ResourceType == "PathExpression" {
+			// Update existing path expression
+			group.Expression[ix].Paths = paths
+			return
+		}
+	}
+	group.Expression = append(group.Expression, Expression{
 		ResourceType: "PathExpression",
 		Paths:        paths,
-	}
+	})
 }
